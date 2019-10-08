@@ -1,0 +1,5 @@
+metrics:
+  - name: foo
+    value: 17
+    labels:
+      bar: baz
