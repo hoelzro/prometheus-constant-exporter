@@ -92,5 +92,5 @@ func main() {
 	})
 
 	log.Printf("Listening on %s...\n", *webListenAddress)
-	http.ListenAndServe(*webListenAddress, nil)
+	log.Fatal(http.ListenAndServe(*webListenAddress, nil))
 }
