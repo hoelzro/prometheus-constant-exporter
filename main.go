@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -28,7 +28,7 @@ func main() {
 	f, err := os.Open(configFilename)
 
 	if err != nil {
-		fmt.Printf("Unable to open config file %v for reading: %v\n", configFilename, err)
+		log.Printf("Unable to open config file %v for reading: %v\n", configFilename, err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func main() {
 	err = d.Decode(&cfg)
 
 	if err != nil {
-		fmt.Printf("Unable to decode %v as a YAML file: %v\n", configFilename, err)
+		log.Printf("Unable to decode %v as a YAML file: %v\n", configFilename, err)
 	}
 
 	for _, metric := range cfg.Metrics {
