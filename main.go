@@ -10,6 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -24,7 +25,11 @@ type config struct {
 	Metrics []metric
 }
 
+var webListenAddress = pflag.String("web.listen-address", ":9001", "The address to listen for requests on")
+
 func main() {
+	pflag.Parse()
+
 	configFilename := "constants.yml"
 
 	f, err := os.Open(configFilename)
@@ -86,6 +91,6 @@ func main() {
 		promHandler.ServeHTTP(w, r)
 	})
 
-	log.Println("Listening on port 9001...")
-	http.ListenAndServe(":9001", nil)
+	log.Printf("Listening on %s...\n", *webListenAddress)
+	http.ListenAndServe(*webListenAddress, nil)
 }
