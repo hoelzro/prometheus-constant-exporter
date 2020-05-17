@@ -31,7 +31,7 @@ func main() {
 
 	if err != nil {
 		log.Printf("Unable to open config file %v for reading: %v\n", configFilename, err)
-		return
+		os.Exit(1)
 	}
 
 	defer f.Close()
@@ -44,7 +44,7 @@ func main() {
 
 	if err != nil {
 		log.Printf("Unable to decode %v as a YAML file: %v\n", configFilename, err)
-		return
+		os.Exit(1)
 	}
 
 	nameToGauge := make(map[string]*prometheus.GaugeVec)
