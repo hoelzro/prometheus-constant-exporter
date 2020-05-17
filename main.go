@@ -80,5 +80,12 @@ func main() {
 		gauge.WithLabelValues(labelValues...).Set(metric.Value)
 	}
 
-	http.ListenAndServe(":9001", promhttp.Handler())
+	promHandler := promhttp.Handler()
+	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Handling /metrics request")
+		promHandler.ServeHTTP(w, r)
+	})
+
+	log.Println("Listening on port 9001...")
+	http.ListenAndServe(":9001", nil)
 }
