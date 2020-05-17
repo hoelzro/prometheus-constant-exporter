@@ -44,6 +44,7 @@ func main() {
 
 	if err != nil {
 		log.Printf("Unable to decode %v as a YAML file: %v\n", configFilename, err)
+		return
 	}
 
 	nameToGauge := make(map[string]*prometheus.GaugeVec)
