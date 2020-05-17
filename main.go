@@ -36,8 +36,7 @@ func main() {
 	f, err := os.Open(configFilename)
 
 	if err != nil {
-		log.Printf("Unable to open config file %v for reading: %v\n", configFilename, err)
-		os.Exit(1)
+		log.Fatalf("Unable to open config file %v for reading: %v\n", configFilename, err)
 	}
 
 	defer f.Close()
@@ -49,8 +48,7 @@ func main() {
 	err = d.Decode(&cfg)
 
 	if err != nil {
-		log.Printf("Unable to decode %v as a YAML file: %v\n", configFilename, err)
-		os.Exit(1)
+		log.Fatalf("Unable to decode %v as a YAML file: %v\n", configFilename, err)
 	}
 
 	nameToGauge := make(map[string]*prometheus.GaugeVec)
