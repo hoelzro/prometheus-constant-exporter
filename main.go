@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"sort"
@@ -92,5 +93,13 @@ func main() {
 	})
 
 	log.Printf("Listening on %s...\n", *webListenAddress)
-	log.Fatal(http.ListenAndServe(*webListenAddress, nil))
+	if strings.HasPrefix(*webListenAddress, "/") {
+		sock, err := net.Listen("unix", *webListenAddress)
+		if err != nil {
+			log.Fatalf("Unable to listen on %s: %v\n", *webListenAddress, err)
+		}
+		log.Fatal(http.Serve(sock, nil))
+	} else {
+		log.Fatal(http.ListenAndServe(*webListenAddress, nil))
+	}
 }
