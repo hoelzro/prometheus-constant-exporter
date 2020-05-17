@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
+	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -44,6 +46,8 @@ func main() {
 		log.Printf("Unable to decode %v as a YAML file: %v\n", configFilename, err)
 	}
 
+	nameToGauge := make(map[string]*prometheus.GaugeVec)
+
 	for _, metric := range cfg.Metrics {
 		labelNames := []string{}
 		labelValues := []string{}
@@ -53,10 +57,24 @@ func main() {
 			labelValues = append(labelValues, value)
 		}
 
-		gauge := promauto.NewGaugeVec(prometheus.GaugeOpts{
-			Name: metric.Name,
-			Help: metric.Help,
-		}, labelNames)
+		keyLabelNames := make([]string, len(labelNames))
+		copy(keyLabelNames, labelNames)
+		sort.Strings(keyLabelNames)
+
+		lookupKey := metric.Name + "\x1f" + strings.Join(keyLabelNames, "\x1f")
+
+		// XXX because of this, you can only provide help in the first metric of its name
+		//     the config should either be called "time_series", or be more hierarchical
+		gauge := nameToGauge[lookupKey]
+
+		if gauge == nil {
+			gauge = promauto.NewGaugeVec(prometheus.GaugeOpts{
+				Name: metric.Name,
+				Help: metric.Help,
+			}, labelNames)
+
+			nameToGauge[lookupKey] = gauge
+		}
 
 		gauge.WithLabelValues(labelValues...).Set(metric.Value)
 	}
