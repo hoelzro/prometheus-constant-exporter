@@ -55,11 +55,11 @@ func main() {
 
 	for _, metric := range cfg.Metrics {
 		labelNames := []string{}
-		labelValues := []string{}
+		labels := make(map[string]string)
 
 		for key, value := range metric.Labels {
 			labelNames = append(labelNames, key)
-			labelValues = append(labelValues, value)
+			labels[key] = value
 		}
 
 		keyLabelNames := make([]string, len(labelNames))
@@ -81,7 +81,7 @@ func main() {
 			nameToGauge[lookupKey] = gauge
 		}
 
-		gauge.WithLabelValues(labelValues...).Set(metric.Value)
+		gauge.With(labels).Set(metric.Value)
 	}
 
 	promHandler := promhttp.Handler()
